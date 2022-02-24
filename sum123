@@ -1,0 +1,81 @@
+sum of 
+
+struct Node
+{
+    int data;
+    struct Node* next;
+};
+
+void insert(struct Node** head_ref, int new_data)
+{
+    struct Node* new_node =
+        (struct Node*) malloc(sizeof(struct Node));
+    new_node->data = new_data;
+    new_node->next = (*head_ref);
+    (*head_ref) = new_node;
+}
+struct Node* XOR (struct Node *a, struct Node *b)
+{
+    return (struct Node*) ((uintptr_t) (a) ^ (uintptr_t) (b));
+}
+void convert(struct Node *head)
+{
+    struct Node *next_node;
+    struct Node *prev = NULL;
+    while (head != NULL)
+    {
+        next_node = head->next;
+        head->next = XOR(next_node, prev);
+        prev = head;
+        head = next_node;
+    }
+}
+void pairSum(struct Node *head, int x)
+{
+    struct Node *first = head;
+    struct Node *next_node = NULL, *prev = NULL;
+    struct Node *second = head;
+    while (second->next != prev)
+    {
+        struct Node *temp = second;
+        second = XOR(second->next, prev);
+        prev = temp;
+    }
+    next_node = NULL;
+    prev = NULL;
+    bool flag = false;
+    while (first != NULL && second != NULL &&
+            first != second && first != next_node)
+    {
+        if ((first->data + second->data)==x)
+        {
+            cout << "(" << first->data << ","
+                 << second->data << ")" << endl;
+ 
+            flag = true;
+            struct Node *temp = first;
+            first = XOR(first->next,prev);
+            prev = temp;
+            temp = second;
+            second = XOR(second->next, next_node);
+            next_node = temp;
+        }
+        else
+        {
+            if ((first->data + second->data) < x)
+            {
+                struct Node *temp = first;
+                first = XOR(first->next,prev);
+                prev = temp;
+            }
+            else
+            {
+                struct Node *temp = second;
+                second = XOR(second->next, next_node);
+                next_node = temp;
+            }
+        }
+    }
+    if (flag == false)
+        cout << "No pair found" << endl;
+}
